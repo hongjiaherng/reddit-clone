@@ -9,11 +9,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase/clientApp";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../atoms/authModalAtom";
+import useDirectory from "../../hooks/useDirectory";
 
 const CreatePostLink: React.FC = () => {
 	const router = useRouter();
 	const [user] = useAuthState(auth);
 	const setAuthModalState = useSetRecoilState(authModalState);
+	const { toggleMenuOpen } = useDirectory();
 
 	const onClick = () => {
 		// Could check for user to open auth modal before redirecting to submit
@@ -22,8 +24,14 @@ const CreatePostLink: React.FC = () => {
             return;
 		} 
         const { communityId } = router.query;
-        console.log(router.query);
-        router.push(`/r/${communityId}/submit`);
+        
+		if (communityId) {
+			router.push(`/r/${communityId}/submit`);
+			return;
+		} 
+		// open our directory menu
+		toggleMenuOpen();
+
 	};
 
 	return (
